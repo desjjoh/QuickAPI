@@ -9,17 +9,24 @@ from app.api.routes import router as items_router
 from app.core.config import settings
 from app.core.logging import setup_logging, log
 from app.core.middleware import RequestLoggingMiddleware
+from app.services.db import init_db, close_db
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     setup_logging()
+    await init_db()
     log.info("startup", app=settings.app_name, debug=settings.debug)
-    yield
-    log.info("shutdown", app=settings.app_name)
+    try:
+        yield
+    finally:
+        await close_db()
+        log.info("shutdown", app=settings.app_name)
 
 app = FastAPI(title=settings.app_name, version=settings.version, lifespan=lifespan)
+
 app.include_router(items_router)
 app.add_middleware(RequestLoggingMiddleware)
+
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     log.warning(
