@@ -13,16 +13,6 @@ QuickAPI demonstrates a lightweight service layout following modern backend conv
 
 This template serves as a foundation for building small but scalable Python services.
 
-## 📁 Project Structure
-
-quickapi/
-├─ app/
-│ ├─ api/ # Routers and endpoints
-│ ├─ core/ # Config, logging, middleware
-│ ├─ models/ # Pydantic schemas
-│ └─ main.py # Application entry point
-└─ .venv/ # Local virtual environment
-
 ## 🚀 Getting Started
 
 ### 1. Clone the repository
