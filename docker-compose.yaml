@@ -1,0 +1,15 @@
+services:
+  api:
+    cpus: 0.5
+    mem_limit: 256m
+    image: quickapi:latest
+    container_name: quickapi-api
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app.db:/app/app.db
+    environment:
+      APP_NAME: QuickAPI
+      DEBUG: "false"
+    restart: unless-stopped
