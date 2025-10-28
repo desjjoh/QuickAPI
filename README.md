@@ -1,4 +1,4 @@
-# ⚡ QuickAPI
+# 🐍 QuickAPI-Python
 
 A lightweight, production-ready REST API built with **FastAPI** and **Async SQLAlchemy**.  
 This service is designed to demonstrate clean architecture, modern async Python practices,  
