@@ -2,6 +2,7 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
+from app.core.config import settings
 from app.core.logging import log
 
 DATABASE_URL = "sqlite+aiosqlite:///./app.db"
@@ -36,11 +37,11 @@ async def init_db() -> None:
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        log.info("Database initialized", url=str(engine.url))
+        log.info("Database initialized", url=str(engine.url), service=settings.app_name)
     except Exception as e:
         log.error("Database initialization failed", error=str(e))
         raise
 
 async def close_db() -> None:
     await engine.dispose()
-    log.info("Database connection closed")
+    log.info("Database connection closed", service=settings.app_name)
