@@ -19,7 +19,7 @@ async def create_item(payload: ItemIn, db: AsyncSession = Depends(get_session)):
     db.add(item)
     await db.commit()
     await db.refresh(item)
-    log.info("item_created", id=item.id, name=item.name, price=item.price)
+    log.info("Item created", id=item.id, name=item.name, price=item.price)
     return ItemOut(id=item.id, name=item.name, price=item.price)
 
 @router.get("/{item_id}", response_model=ItemOut)
@@ -27,7 +27,9 @@ async def get_item(item_id: int, db: AsyncSession = Depends(get_session)):
     res = await db.execute(select(ItemORM).where(ItemORM.id == item_id))
     obj = res.scalar_one_or_none()
     if not obj:
+        log.warning("Item not found", id=item_id)
         raise HTTPException(status_code=404, detail="Item not found")
+    log.info("Item retrieved", id=obj.id, name=obj.name)
     return ItemOut(id=obj.id, name=obj.name, price=obj.price)
 
 @router.get("/", response_model=List[ItemOut])

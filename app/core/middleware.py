@@ -10,18 +10,26 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         try:
             response: Response = await call_next(request)
         except Exception as exc:
-            log.exception("unhandled_exception", path=request.url.path, error=str(exc))
+            duration = (time.perf_counter() - start_time) * 1000
+            log.error(
+                "Unhandled exception during request",
+                method=request.method,
+                path=request.url.path,
+                error=str(exc),
+                ms=round(duration, 2),
+            )
+             
             return JSONResponse(
                 status_code=500,
                 content={"detail": "Internal server error"},
             )
 
-        process_time = (time.perf_counter() - start_time) * 1000
+        duration = (time.perf_counter() - start_time) * 1000
         log.info(
-            "request_handled",
+            "Request completed",
             method=request.method,
             path=request.url.path,
             status=response.status_code,
-            duration_ms=round(process_time, 2),
+            ms=round(duration, 2),
         )
         return response

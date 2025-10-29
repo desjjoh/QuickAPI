@@ -2,6 +2,8 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
+from app.core.logging import log
+
 DATABASE_URL = "sqlite+aiosqlite:///./app.db"
 
 class Base(DeclarativeBase):
@@ -31,8 +33,14 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     from app.models.db_models import ItemORM
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        log.info("Database initialized", url=str(engine.url))
+    except Exception as e:
+        log.error("Database initialization failed", error=str(e))
+        raise
 
 async def close_db() -> None:
     await engine.dispose()
+    log.info("Database connection closed")
