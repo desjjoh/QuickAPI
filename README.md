@@ -206,5 +206,5 @@ Then open [http://localhost:8000/docs](http://localhost:8000/docs).
 
 ## 📄 License
 
-MIT © 2025 Your Name  
+MIT © 2025 John Desjardins  
 You’re free to use, modify, and distribute this project with attribution.
