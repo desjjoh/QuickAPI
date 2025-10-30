@@ -13,28 +13,22 @@ from app.services.db import init_db, close_db
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    setup_logging()
-   
-    log.info(
-        "Server running in development mode at http://localhost:8000" if settings.debug else "Server running in production mode at http://localhost:8000",
-        service=settings.app_name,
-        port=8000,
-    )
-
-    log.info(
-        "Swagger docs available at http://localhost:8000/docs",
-        url="http://localhost:8000/docs",
-        service=settings.app_name,
-    )
-
     try:
+        setup_logging()
         await init_db()
+        
         log.info(
-            "Startup complete",
-            app=settings.app_name,
-            mode="debug" if settings.debug else "production",
-            db_connected=True,
+            "Server running in development mode at http://localhost:8000" if settings.debug else "Server running in production mode at http://localhost:8000",
+            service=settings.app_name,
+            port=8000,
         )
+
+        log.info(
+            "Swagger docs available at http://localhost:8000/docs",
+            url="http://localhost:8000/docs",
+            service=settings.app_name,
+        )
+
         yield
     except Exception as e:
         log.error("Startup failed", error=str(e))
