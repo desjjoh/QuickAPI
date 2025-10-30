@@ -14,8 +14,7 @@ from app.services.db import init_db, close_db
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     setup_logging()
-    await init_db()
-    
+   
     log.info(
         "Server running in development mode at http://localhost:8000" if settings.debug else "Server running in production mode at http://localhost:8000",
         service=settings.app_name,
@@ -29,10 +28,23 @@ async def lifespan(_: FastAPI):
     )
 
     try:
+        await init_db()
+        log.info(
+            "Startup complete",
+            app=settings.app_name,
+            mode="debug" if settings.debug else "production",
+            db_connected=True,
+        )
         yield
+    except Exception as e:
+        log.error("Startup failed", error=str(e))
+        raise
     finally:
-        await close_db()
-        log.info("Shutdown complete", service=settings.app_name)
+        try:
+            await close_db()
+            log.info("Shutdown complete", service=settings.app_name)
+        except Exception as e:
+            log.error("Error during shutdown", error=str(e))
 
 app = FastAPI(title=settings.app_name, version=settings.version, lifespan=lifespan)
 
